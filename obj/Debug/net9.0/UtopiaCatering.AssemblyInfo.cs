@@ -11,11 +11,12 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.AspNetCore.Identity.UI.UIFrameworkAttribute("Bootstrap5")]
 [assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("aspnet-UtopiaCatering-a295db00-abb4-4f06-81c7-bfb0d1a1a555")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("UtopiaCatering")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+596362b8e93bf137f360796ea6d313d24c8a38ad")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+719170e47106942d7562922ba1e7b2a13026fc77")]
 [assembly: System.Reflection.AssemblyProductAttribute("UtopiaCatering")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UtopiaCatering")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
