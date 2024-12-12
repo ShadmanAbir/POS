@@ -37,7 +37,6 @@ namespace UtopiaCatering.Controllers
             var purchaseOrder = await _context.PurchaseOrder
                 .Include(p => p.Vendor)
                 .Include(p => p.PurchaseOrderDetails)
-                .ThenInclude(d => d.Items)
                 .FirstOrDefaultAsync(m => m.PoID == id);
 
             if (purchaseOrder == null)
@@ -59,20 +58,25 @@ namespace UtopiaCatering.Controllers
         // POST: PurchaseOrders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PurchaseOrder purchaseOrder, List<PurchaseOrderDetails> purchaseOrderDetails)
+        public async Task<IActionResult> Create(PurchaseOrder purchaseOrder)
         {
             if (ModelState.IsValid)
             {
+
+                foreach (var item in purchaseOrder.PurchaseOrderDetails)
+                {
+                    item.PoDetailsID = 0;
+                }
                 _context.Add(purchaseOrder);
                 await _context.SaveChangesAsync();
 
-                foreach (var detail in purchaseOrderDetails)
+/*                foreach (var detail in purchaseOrderDetails)
                 {
                     detail.PoID = purchaseOrder.PoID;
                     _context.PurchaseOrderDetails.Add(detail);
                 }
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();*/
                 return RedirectToAction(nameof(Index));
             }
 

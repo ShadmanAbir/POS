@@ -12,8 +12,8 @@ namespace UtopiaCatering.Models
         public decimal Due { get; set; }
         public decimal PaidAmount { get; set; }
 
-        public Vendor? Vendor { get; set; }
-        public ICollection<PurchaseOrderDetails> PurchaseOrderDetails { get; set; }
+        public virtual Vendor? Vendor { get; set; }
+        public virtual ICollection<PurchaseOrderDetails> PurchaseOrderDetails { get; set; }
 
     }
 
@@ -28,8 +28,7 @@ namespace UtopiaCatering.Models
         public decimal Rate { get; set; }
 
         // Navigation Property
-        public PurchaseOrder? PurchaseOrder { get; set; }  // Link to PurchaseOrder
-        public Items? Items { get; set; }
+        public virtual PurchaseOrder? PurchaseOrder { get; set; }  // Link to PurchaseOrder
 
     }
 

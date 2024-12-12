@@ -1,5 +1,4 @@
 ﻿@model UtopiaCatering.Models.PurchaseOrder
-
 @{
     ViewData["Title"] = "Create Purchase Order";
 }
@@ -14,12 +13,22 @@
 
     <div class="form-group">
         <label asp-for="GrossAmount" class="control-label"></label>
-        <input asp-for="GrossAmount" class="form-control" />
+        <input asp-for="GrossAmount" class="form-control" id="gross-amount" readonly />
     </div>
 
     <div class="form-group">
         <label asp-for="Discount" class="control-label"></label>
-        <input asp-for="Discount" class="form-control" />
+        <input asp-for="Discount" class="form-control" id="discount" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PaidAmount" class="control-label"></label>
+        <input asp-for="PaidAmount" class="form-control" id="paid-amount" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Due" class="control-label"></label>
+        <input asp-for="Due" class="form-control" id="due-amount" readonly />
     </div>
 
     <h4>Order Details</h4>
@@ -30,6 +39,7 @@
                 <th>Unit</th>
                 <th>Quantity</th>
                 <th>Rate</th>
+                <th>Total</th>
                 <th></th>
             </tr>
         </thead>
@@ -43,9 +53,6 @@
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
     <script>
         document.getElementById('add-detail').addEventListener('click', function () {
             const tableBody = document.querySelector('#order-details tbody');
@@ -56,7 +63,7 @@
                     <select name="purchaseOrderDetails[0].ItemID" class="form-control">
         @foreach (var item in ViewBag.ItemID)
         {
-                                    <option value="@item.Value">@item.Text</option>
+                                <option value="@item.Value">@item.Text</option>
         }
                     </select>
                 </td>
@@ -64,19 +71,35 @@
                     <input name="purchaseOrderDetails[0].Unit" class="form-control" />
                 </td>
                 <td>
-                    <input name="purchaseOrderDetails[0].Quantity" class="form-control" type="number" />
+                    <input name="purchaseOrderDetails[0].Quantity" class="form-control quantity" type="number" />
                 </td>
                 <td>
-                    <input name="purchaseOrderDetails[0].Rate" class="form-control" type="number" step="0.01" />
+                    <input name="purchaseOrderDetails[0].Rate" class="form-control rate" type="number" step="0.01" />
+                </td>
+                <td>
+                    <input class="form-control total" type="number" readonly />
                 </td>
                 <td>
                     <button type="button" class="btn btn-danger remove-detail">Remove</button>
                 </td>`;
 
             tableBody.appendChild(newRow);
+            updateIndexes();
+            attachRowEvents(newRow);
+        });
 
-            // Update indexes for the new rows
-            const rows = tableBody.querySelectorAll('tr');
+        document.getElementById('order-details').addEventListener('click', function (event) {
+            if (event.target.classList.contains('remove-detail')) {
+                event.target.closest('tr').remove();
+                calculateGrossAmount();
+            }
+        });
+
+        document.getElementById('discount').addEventListener('input', updateDueAmount);
+        document.getElementById('paid-amount').addEventListener('input', updateDueAmount);
+
+        function updateIndexes() {
+            const rows = document.querySelectorAll('#order-details tbody tr');
             rows.forEach((row, index) => {
                 row.querySelectorAll('input, select').forEach(input => {
                     const name = input.getAttribute('name');
@@ -85,12 +108,40 @@
                     }
                 });
             });
-        });
+        }
 
-        document.getElementById('order-details').addEventListener('click', function (event) {
-            if (event.target.classList.contains('remove-detail')) {
-                event.target.closest('tr').remove();
+        function attachRowEvents(row) {
+            const quantityInput = row.querySelector('.quantity');
+            const rateInput = row.querySelector('.rate');
+            const totalInput = row.querySelector('.total');
+
+            function updateRowTotal() {
+                const quantity = parseFloat(quantityInput.value) || 0;
+                const rate = parseFloat(rateInput.value) || 0;
+                totalInput.value = (quantity * rate).toFixed(2);
+                calculateGrossAmount();
             }
-        });
+
+            quantityInput.addEventListener('input', updateRowTotal);
+            rateInput.addEventListener('input', updateRowTotal);
+        }
+
+        function calculateGrossAmount() {
+            let grossAmount = 0;
+            document.querySelectorAll('#order-details .total').forEach(totalInput => {
+                grossAmount += parseFloat(totalInput.value) || 0;
+            });
+            document.getElementById('gross-amount').value = grossAmount.toFixed(2);
+            updateDueAmount();
+        }
+
+        function updateDueAmount() {
+            const grossAmount = parseFloat(document.getElementById('gross-amount').value) || 0;
+            const discount = parseFloat(document.getElementById('discount').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paid-amount').value) || 0;
+
+            const dueAmount = grossAmount - discount - paidAmount;
+            document.getElementById('due-amount').value = dueAmount.toFixed(2);
+        }
     </script>
 }
