@@ -11,7 +11,6 @@ namespace UtopiaCatering.Models
 
         public ICollection<Events>? Events { get; set; }  // Organization can have many events
         public ICollection<Organizer>? Organizers { get; set; }  // Organization can have many organizers
-        public ICollection<PurchaseOrder>? PurchaseOrders { get; set; }
     }
 
 

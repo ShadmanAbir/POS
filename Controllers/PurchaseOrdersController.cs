@@ -22,7 +22,7 @@ namespace UtopiaCatering.Controllers
         // GET: PurchaseOrders
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.PurchaseOrder.Include(p => p.Organization);
+            var applicationDbContext = _context.PurchaseOrder.Include(p => p.Vendor);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -35,7 +35,7 @@ namespace UtopiaCatering.Controllers
             }
 
             var purchaseOrder = await _context.PurchaseOrder
-                .Include(p => p.Organization)
+                .Include(p => p.Vendor)
                 .FirstOrDefaultAsync(m => m.PoID == id);
             if (purchaseOrder == null)
             {
@@ -48,7 +48,7 @@ namespace UtopiaCatering.Controllers
         // GET: PurchaseOrders/Create
         public IActionResult Create()
         {
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID");
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName");
             return View();
         }
 
@@ -57,7 +57,7 @@ namespace UtopiaCatering.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PoID,OrganizationID,GrossAmount,Discount,Due,PaidAmount")] PurchaseOrder purchaseOrder)
+        public async Task<IActionResult> Create([Bind("PoID,VendorID,GrossAmount,Discount,Due,PaidAmount")] PurchaseOrder purchaseOrder)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +65,7 @@ namespace UtopiaCatering.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID", purchaseOrder.OrganizationID);
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName", purchaseOrder.VendorID);
             return View(purchaseOrder);
         }
 
@@ -82,7 +82,7 @@ namespace UtopiaCatering.Controllers
             {
                 return NotFound();
             }
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID", purchaseOrder.OrganizationID);
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName", purchaseOrder.VendorID);
             return View(purchaseOrder);
         }
 
@@ -91,7 +91,7 @@ namespace UtopiaCatering.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PoID,OrganizationID,GrossAmount,Discount,Due,PaidAmount")] PurchaseOrder purchaseOrder)
+        public async Task<IActionResult> Edit(int id, [Bind("PoID,VendorID,GrossAmount,Discount,Due,PaidAmount")] PurchaseOrder purchaseOrder)
         {
             if (id != purchaseOrder.PoID)
             {
@@ -118,7 +118,7 @@ namespace UtopiaCatering.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID", purchaseOrder.OrganizationID);
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName", purchaseOrder.VendorID);
             return View(purchaseOrder);
         }
 
@@ -131,7 +131,7 @@ namespace UtopiaCatering.Controllers
             }
 
             var purchaseOrder = await _context.PurchaseOrder
-                .Include(p => p.Organization)
+                .Include(p => p.Vendor)
                 .FirstOrDefaultAsync(m => m.PoID == id);
             if (purchaseOrder == null)
             {

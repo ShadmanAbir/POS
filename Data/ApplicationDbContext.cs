@@ -47,9 +47,9 @@ namespace UtopiaCatering.Data
 
             // PurchaseOrder - Organization relationship (Many-to-One)
             modelBuilder.Entity<PurchaseOrder>()
-                .HasOne(po => po.Organization)
+                .HasOne(po => po.Vendor)
                 .WithMany(o => o.PurchaseOrders)
-                .HasForeignKey(po => po.OrganizationID)
+                .HasForeignKey(po => po.VendorID)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<ItemElements>()
@@ -68,6 +68,7 @@ namespace UtopiaCatering.Data
         public DbSet<Events> Events { get; set; }
         public DbSet<Organization> Organization { get; set; }
         public DbSet<Organizer> Organizer { get; set; }
+        public DbSet<Vendor> Vendor { get; set; }
         public DbSet<PurchaseOrder> PurchaseOrder { get; set; }
         public DbSet<PurchaseOrderDetails> PurchaseOrderDetails { get; set; }
         public DbSet<WorkOrder> WorkOrder { get; set; }
