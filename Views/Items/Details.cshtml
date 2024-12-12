@@ -24,7 +24,7 @@
             @foreach (var element in Model.ItemElements)
             {
                 <tr>
-                    <td>@element.Items.ItemName</td>
+                    <td>@element.ElementsName</td>
                     <td>@element.Quantity</td>
                     <td>
                         <a asp-action="EditElement" asp-route-id="@element.ItemElementID" class="btn btn-warning">Edit</a>

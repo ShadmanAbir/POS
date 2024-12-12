@@ -69,16 +69,22 @@ public class ItemsController : Controller
         {
             return NotFound();
         }
-
-        var itemElements = await _context.Items
-            .Include(i => i.ItemElements)
-            .FirstOrDefaultAsync(m => m.ItemID == id);
-        if (itemElements == null)
+        var item = _context.Items.SingleOrDefault(a => a.ItemID == id);
+        if (item != null && item.ItemType == 3)
         {
-            return NotFound();
+            item.ItemElements = (from ie in _context.ItemElements
+                                 join en in _context.Items on ie.ElementID equals en.ItemID
+                                 where ie.ItemID == id
+                                 select new ItemElements
+                                 {
+                                     ItemID = ie.ItemID,
+                                     ElementID = en.ItemID,
+                                     ItemElementID = ie.ItemElementID,
+                                     ElementsName = en.ItemName,
+                                     Quantity = ie.Quantity
+                                 }).ToList();
         }
-
-        return View(itemElements);
+        return View(item);
     }
 
     private bool ItemsExists(int id)

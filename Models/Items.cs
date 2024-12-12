@@ -30,5 +30,8 @@ namespace UtopiaCatering.Models
 
         //Navigation properties
         public Items? Items { get; set; }
+
+        [NotMapped]
+        public string? ElementsName { get; set; }
     }
 }
