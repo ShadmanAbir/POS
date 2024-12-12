@@ -9,9 +9,9 @@ namespace UtopiaCatering.Models
         public int OrganizationID { get; set; }
         public required string OrganizationName { get; set; }
 
-        public ICollection<Events> Events { get; set; }  // Organization can have many events
-        public ICollection<Organizer> Organizers { get; set; }  // Organization can have many organizers
-        public ICollection<PurchaseOrder> PurchaseOrders { get; set; }
+        public ICollection<Events>? Events { get; set; }  // Organization can have many events
+        public ICollection<Organizer>? Organizers { get; set; }  // Organization can have many organizers
+        public ICollection<PurchaseOrder>? PurchaseOrders { get; set; }
     }
 
 

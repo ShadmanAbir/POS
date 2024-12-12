@@ -58,6 +58,7 @@ namespace UtopiaCatering.Controllers
         {
             if (ModelState.IsValid)
             {
+
                 _context.Add(organization);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
