@@ -1,0 +1,162 @@
+﻿@model UtopiaCatering.Models.Items
+
+@{
+    ViewData["Title"] = "Create Item";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="ItemName">Item Name</label>
+        <input asp-for="ItemName" class="form-control" />
+        <span asp-validation-for="ItemName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="ItemType">Item Type</label>
+        <select asp-for="ItemType" class="form-control" asp-items="@(ViewData["ItemType"] as SelectList)" id="ItemType">
+            <option value="">--Select Item Type--</option>
+        </select>
+        <span asp-validation-for="ItemType" class="text-danger"></span>
+    </div>
+
+    <div class="form-group" id="balanceField" style="display:none;">
+        <label for="Balance">Balance</label>
+        <input asp-for="Balance" class="form-control" />
+        <span asp-validation-for="Balance" class="text-danger"></span>
+    </div>
+
+    <div id="itemElementsTable" style="display:none;">
+        <h3>Item Elements</h3>
+        <div class="d-flex justify-content-between mb-2">
+            <button type="button" id="addElement" class="btn btn-primary">Add Element</button>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Element Name</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="itemElementsBody">
+                <tr>
+                    <td>
+                        <select name="ItemElements[0].ElementID" class="form-control" required id="elementSelect_0">
+                            <option value="">--Select Raw Material--</option>
+                        </select>
+                    </td>
+                    <td><input type="number" name="ItemElements[0].Quantity" class="form-control" required /></td>
+                    <td><button type="button" class="btn btn-danger removeElement">Remove</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const rawMaterials = @Html.Raw(Json.Serialize(ViewData["RawMaterials"]));
+
+            function populateRawMaterialsDropdown(dropdownId) {
+                const dropdown = document.getElementById(dropdownId);
+                dropdown.innerHTML = '<option value="">--Select Raw Material--</option>';
+                rawMaterials.forEach(rawMaterial => {
+                    const option = document.createElement("option");
+                    option.value = rawMaterial.value;
+                    option.textContent = rawMaterial.text;
+                    dropdown.appendChild(option);
+                });
+            }
+
+            populateRawMaterialsDropdown("elementSelect_0");
+
+            const itemTypeElement = document.getElementById('ItemType');
+            const itemElementsTable = document.getElementById('itemElementsTable');
+            const balanceField = document.getElementById('balanceField');
+            const balanceInput = document.querySelector('[name="Balance"]');
+            const itemElementsBody = document.getElementById('itemElementsBody');
+
+            itemTypeElement.addEventListener('change', function () {
+                const itemType = this.value;
+                const itemElements = document.querySelectorAll('[name^="ItemElements["]');
+
+                if (itemType == 3) {
+                    itemElementsTable.style.display = 'block';
+                    balanceField.style.display = 'none';
+                    balanceInput.value = 0;
+                    itemElements.forEach(elem => elem.disabled = false);
+                } else if (itemType == 1 || itemType == 2) {
+                    itemElementsTable.style.display = 'none';
+                    balanceField.style.display = 'block';
+                    balanceInput.value = 0;
+                    itemElements.forEach(elem => elem.disabled = true);
+                } else {
+                    itemElementsTable.style.display = 'none';
+                    balanceField.style.display = 'none';
+                    balanceInput.value = 0;
+                    itemElements.forEach(elem => elem.disabled = true);
+                }
+            });
+
+
+
+
+             document.getElementById('addElement').addEventListener('click', function () {
+                const rowCount = itemElementsBody.rows.length;
+                const newRow = itemElementsBody.insertRow(rowCount);
+
+                const dropdownId = `elementSelect_${rowCount}`;
+
+                const elementNameCell = newRow.insertCell(0);
+                const quantityCell = newRow.insertCell(1);
+                const actionCell = newRow.insertCell(2);
+
+                const selectElement = document.createElement('select');
+                selectElement.name = `ItemElements[${rowCount}].ElementID`;
+                selectElement.id = dropdownId;
+                selectElement.classList.add('form-control');
+                selectElement.required = true;
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '--Select Raw Material--';
+                selectElement.appendChild(defaultOption);
+
+                rawMaterials.forEach(rawMaterial => {
+                    const option = document.createElement('option');
+                    option.value = rawMaterial.value;
+                    option.textContent = rawMaterial.text;
+                    selectElement.appendChild(option);
+                });
+
+                elementNameCell.appendChild(selectElement);
+
+                const quantityInput = document.createElement('input');
+                quantityInput.type = 'number';
+                quantityInput.name = `ItemElements[${rowCount}].Quantity`;
+                quantityInput.classList.add('form-control');
+                quantityInput.required = true;
+                quantityCell.appendChild(quantityInput);
+
+                const removeButton = document.createElement('button');
+                removeButton.type = 'button';
+                removeButton.classList.add('btn', 'btn-danger', 'removeElement');
+                removeButton.textContent = 'Remove';
+                actionCell.appendChild(removeButton);
+            });
+
+            itemElementsBody.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('removeElement')) {
+                    e.target.closest('tr').remove();
+                }
+            });
+        });
+    </script>
+}

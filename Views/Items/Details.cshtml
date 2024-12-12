@@ -1,0 +1,45 @@
+﻿@model UtopiaCatering.Models.Items
+
+@{
+    ViewData["Title"] = "Item Details";
+}
+
+<h1>Item: @Model.ItemName</h1>
+
+<p>Type: @Model.ItemTypeName</p>
+<p>Balance: @Model.Balance</p>
+
+@if(Model.ItemType == 3){
+
+    <h3>Item Elements</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Element Name</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var element in Model.ItemElements)
+            {
+                <tr>
+                    <td>@element.Items.ItemName</td>
+                    <td>@element.Quantity</td>
+                    <td>
+                        <a asp-action="EditElement" asp-route-id="@element.ItemElementID" class="btn btn-warning">Edit</a>
+                        <a asp-action="DeleteElement" asp-route-id="@element.ItemElementID" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p>
+        <a asp-action="CreateElement" asp-route-itemId="@Model.ItemID" class="btn btn-primary">Add Item Element</a>
+    </p>
+
+}
+
+
+
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
