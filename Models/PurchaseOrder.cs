@@ -29,6 +29,7 @@ namespace UtopiaCatering.Models
 
         // Navigation Property
         public PurchaseOrder? PurchaseOrder { get; set; }  // Link to PurchaseOrder
+        public Items? Items { get; set; }
 
     }
 
