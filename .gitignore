@@ -54,3 +54,5 @@
 /obj/UtopiaCatering.csproj.nuget.dgspec.json
 /obj/UtopiaCatering.csproj.nuget.g.props
 /obj/UtopiaCatering.csproj.nuget.g.targets
+/obj/Debug/net9.0/staticwebassets.build.json
+/obj/Debug/net9.0/staticwebassets.upToDateCheck.txt
