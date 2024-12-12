@@ -6,9 +6,9 @@ namespace UtopiaCatering.Models
     {
         [Key]
         public int EventID { get; set; }
-        public string EventName { get; set; }
+        public required string EventName { get; set; }
         public int OrganizationID { get; set; }
         // Navigation Property
-        public Organization Organization { get; set; }  // Link to Organization
+        public Organization? Organization { get; set; }  // Link to Organization
     }
 }
