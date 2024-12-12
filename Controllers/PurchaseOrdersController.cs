@@ -36,7 +36,10 @@ namespace UtopiaCatering.Controllers
 
             var purchaseOrder = await _context.PurchaseOrder
                 .Include(p => p.Vendor)
+                .Include(p => p.PurchaseOrderDetails)
+                .ThenInclude(d => d.Items)
                 .FirstOrDefaultAsync(m => m.PoID == id);
+
             if (purchaseOrder == null)
             {
                 return NotFound();
@@ -48,25 +51,33 @@ namespace UtopiaCatering.Controllers
         // GET: PurchaseOrders/Create
         public IActionResult Create()
         {
-                        ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName");
-            ViewData["ItemID"] = new SelectList(_context.Items, "ItemID", "ItemName");
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName");
+            ViewData["ItemID"] = new SelectList(_context.Items.Where(a => a.ItemType == 1), "ItemID", "ItemName");
             return View();
         }
 
         // POST: PurchaseOrders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PoID,VendorID,GrossAmount,Discount,Due,PaidAmount")] PurchaseOrder purchaseOrder)
+        public async Task<IActionResult> Create(PurchaseOrder purchaseOrder, List<PurchaseOrderDetails> purchaseOrderDetails)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(purchaseOrder);
                 await _context.SaveChangesAsync();
+
+                foreach (var detail in purchaseOrderDetails)
+                {
+                    detail.PoID = purchaseOrder.PoID;
+                    _context.PurchaseOrderDetails.Add(detail);
+                }
+
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorID", purchaseOrder.VendorID);
+
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName", purchaseOrder.VendorID);
+            ViewData["ItemID"] = new SelectList(_context.Items.Where(a => a.ItemType == 1), "ItemID", "ItemName");
             return View(purchaseOrder);
         }
 
@@ -78,21 +89,24 @@ namespace UtopiaCatering.Controllers
                 return NotFound();
             }
 
-            var purchaseOrder = await _context.PurchaseOrder.FindAsync(id);
+            var purchaseOrder = await _context.PurchaseOrder
+                .Include(p => p.PurchaseOrderDetails)
+                .FirstOrDefaultAsync(p => p.PoID == id);
+
             if (purchaseOrder == null)
             {
                 return NotFound();
             }
-            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorID", purchaseOrder.VendorID);
+
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName", purchaseOrder.VendorID);
+            ViewData["ItemID"] = new SelectList(_context.Items.Where(a => a.ItemType == 1), "ItemID", "ItemName");
             return View(purchaseOrder);
         }
 
         // POST: PurchaseOrders/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PoID,VendorID,GrossAmount,Discount,Due,PaidAmount")] PurchaseOrder purchaseOrder)
+        public async Task<IActionResult> Edit(int id, PurchaseOrder purchaseOrder, List<PurchaseOrderDetails> purchaseOrderDetails)
         {
             if (id != purchaseOrder.PoID)
             {
@@ -104,6 +118,16 @@ namespace UtopiaCatering.Controllers
                 try
                 {
                     _context.Update(purchaseOrder);
+
+                    var existingDetails = _context.PurchaseOrderDetails.Where(d => d.PoID == id).ToList();
+                    _context.PurchaseOrderDetails.RemoveRange(existingDetails);
+
+                    foreach (var detail in purchaseOrderDetails)
+                    {
+                        detail.PoID = id;
+                        _context.PurchaseOrderDetails.Add(detail);
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -117,28 +141,12 @@ namespace UtopiaCatering.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorID", purchaseOrder.VendorID);
-            return View(purchaseOrder);
-        }
 
-        // GET: PurchaseOrders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var purchaseOrder = await _context.PurchaseOrder
-                .Include(p => p.Vendor)
-                .FirstOrDefaultAsync(m => m.PoID == id);
-            if (purchaseOrder == null)
-            {
-                return NotFound();
-            }
-
+            ViewData["VendorID"] = new SelectList(_context.Vendor, "VendorID", "VendorName", purchaseOrder.VendorID);
+            ViewData["ItemID"] = new SelectList(_context.Items.Where(a => a.ItemType == 1), "ItemID", "ItemName");
             return View(purchaseOrder);
         }
 
@@ -147,13 +155,17 @@ namespace UtopiaCatering.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var purchaseOrder = await _context.PurchaseOrder.FindAsync(id);
+            var purchaseOrder = await _context.PurchaseOrder
+                .Include(p => p.PurchaseOrderDetails)
+                .FirstOrDefaultAsync(p => p.PoID == id);
+
             if (purchaseOrder != null)
             {
+                _context.PurchaseOrderDetails.RemoveRange(purchaseOrder.PurchaseOrderDetails);
                 _context.PurchaseOrder.Remove(purchaseOrder);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
