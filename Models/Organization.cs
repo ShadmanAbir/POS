@@ -23,7 +23,7 @@ namespace UtopiaCatering.Models
         public int OrganizationID { get; set; }
         public required string OrganizerName { get; set; }
         // Navigation Property
-        public Organization Organization { get; set; }  // Link to Organization
+        public Organization? Organization { get; set; }  // Link to Organization
 
     }
 }
