@@ -48,7 +48,7 @@ namespace UtopiaCatering.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID");
+            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationName");
             return View();
         }
 
@@ -65,7 +65,7 @@ namespace UtopiaCatering.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID", events.OrganizationID);
+            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationName", events.OrganizationID);
             return View(events);
         }
 
@@ -82,7 +82,7 @@ namespace UtopiaCatering.Controllers
             {
                 return NotFound();
             }
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID", events.OrganizationID);
+            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationName", events.OrganizationID);
             return View(events);
         }
 
@@ -118,7 +118,7 @@ namespace UtopiaCatering.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationID", events.OrganizationID);
+            ViewData["OrganizationID"] = new SelectList(_context.Organization, "OrganizationID", "OrganizationName", events.OrganizationID);
             return View(events);
         }
 
