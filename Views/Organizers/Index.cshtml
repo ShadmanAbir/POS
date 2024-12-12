@@ -18,15 +18,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Organization)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsDeleted)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -37,16 +28,7 @@
                 @Html.DisplayFor(modelItem => item.OrganizerName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Organization.OrganizationID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy)
+                @Html.DisplayFor(modelItem => item.Organization.OrganizationName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.OrganizerID">Edit</a> |
